@@ -1,0 +1,41 @@
+# =============================================================================
+# SPORA — Python Dependencies
+# Hyphae Composites
+#
+# All versions are pinned to ensure every team member gets identical results.
+# To add a new package: add it here first, then run pip install -r requirements.txt
+# Never run pip install <package> directly.
+# =============================================================================
+
+# --- Cheminformatics ---------------------------------------------------------
+rdkit==2025.9.6                  # core molecule handling, SMILES, descriptors, reactions
+
+# --- Database ----------------------------------------------------------------
+supabase==2.31.0                 # Supabase Python client (reads/writes to cloud Postgres)
+psycopg2-binary==2.9.9           # direct PostgreSQL connection driver used by connection.py
+
+# --- Data & Science ----------------------------------------------------------
+pandas==2.2.2                    # DataFrames — used for descriptor tables and exports
+numpy==1.26.4                    # numerical arrays — dependency of RDKit and pandas
+scipy==1.13.1                    # scientific computing — used in degradation modelling
+
+# --- Configuration & Utilities -----------------------------------------------
+python-dotenv==1.0.1             # loads .env file into environment variables
+pydantic==2.7.1                  # data validation for PolymerSpec and ExperimentSpec models
+click==8.1.7                     # builds the --polymer, --mechanism CLI flags in scripts/
+
+# --- Jupyter & Notebooks -----------------------------------------------------
+jupyterlab==4.2.1                # browser-based notebook environment (make notebook)
+ipykernel==6.29.4                # connects Jupyter to the Python virtual environment
+
+# --- Code Quality ------------------------------------------------------------
+ruff==0.4.4                      # fast linter (make lint)
+black==24.4.2                    # code formatter (make format)
+pytest==8.2.0                    # test runner (make test)
+pytest-cov==5.0.0                # test coverage reporting
+
+# --- Documentation -----------------------------------------------------------
+pdoc==14.5.1                     # generates HTML docs from docstrings (make docs)
+
+# --- Export ------------------------------------------------------------------
+pyarrow==16.1.0                  # writes Parquet files for data/exports/ (make export)
