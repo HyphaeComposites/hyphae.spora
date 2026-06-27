@@ -5,10 +5,12 @@
 # All versions are pinned to ensure every team member gets identical results.
 # To add a new package: add it here first, then run pip install -r requirements.txt
 # Never run pip install <package> directly.
+# Use: sed -i '' 's/pydantic==2.7.1/pydantic==2.11.7/' requirements.txt
+# pip install -r requirements.txt
 # =============================================================================
 
 # --- Cheminformatics ---------------------------------------------------------
-rdkit==2025.9.6                  # core molecule handling, SMILES, descriptors, reactions
+rdkit==2025.9.3                  # core molecule handling, SMILES, descriptors, reactions
 
 # --- Database ----------------------------------------------------------------
 supabase==2.31.0                 # Supabase Python client (reads/writes to cloud Postgres)
@@ -21,7 +23,7 @@ scipy==1.13.1                    # scientific computing — used in degradation 
 
 # --- Configuration & Utilities -----------------------------------------------
 python-dotenv==1.0.1             # loads .env file into environment variables
-pydantic==2.7.1                  # data validation for PolymerSpec and ExperimentSpec models
+pydantic==2.11.7                  # data validation for PolymerSpec and ExperimentSpec models
 click==8.1.7                     # builds the --polymer, --mechanism CLI flags in scripts/
 
 # --- Jupyter & Notebooks -----------------------------------------------------
