@@ -19,7 +19,7 @@ import sys
 import click
 from rdkit import rdBase
 
-from spora.db.queries import get_polymer, insert_experiment
+from spora.db.queries import get_polymer, get_mechanism, insert_experiment
 from spora.models.experiment import ExperimentSpec
 from spora.rdkit_pipeline.smiles_builder import build_polymer_smiles
 from spora.rdkit_pipeline.degradation import apply_degradation
@@ -55,12 +55,16 @@ def run(polymer, mechanism, temperature, time_steps, masterbatch_concentration, 
     click.echo("→ Fetching polymer from database...")
     polymer_record = get_polymer(polymer)
 
-    # 2 — Create experiment row in database
+    # 2 — Look up mechanism in database
+    click.echo("→ Fetching mechanism from database...")
+    mechanism_record = get_mechanism(mechanism)
+
+    # 3 — Create experiment row in database
     click.echo("→ Creating experiment record...")
     experiment_id = insert_experiment({
         "label":            output_label,
         "polymer_id":       polymer_record["id"],
-        "mechanism_id":     1,  # TODO: look up mechanism_id from degradation_mechanisms table
+        "mechanism_id":     mechanism_record["id"],
         "temperature_c":    temperature,
         "time_steps":       time_steps,
         "masterbatch_pct":  masterbatch_concentration,

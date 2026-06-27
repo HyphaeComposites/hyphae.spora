@@ -7,6 +7,7 @@ they handle connection management and error cases consistently.
 
 Available functions:
     get_polymer(name)               → fetch a polymer record by name
+    get_mechanism(code)             → fetch a degradation mechanism by code
     insert_experiment(meta)         → create a new experiment row
     insert_descriptors_batch(df)    → bulk-insert descriptor rows (fast)
     get_run_summary(label)          → aggregated stats for a run
@@ -30,6 +31,21 @@ def get_polymer(name: str) -> dict:
         row = cur.fetchone()
         if row is None:
             raise ValueError(f"Polymer '{name}' not found in database. Check polymers table.")
+        cols = [desc[0] for desc in cur.description]
+        return dict(zip(cols, row))
+
+
+def get_mechanism(code: str) -> dict:
+    """
+    Fetch a degradation mechanism record by its short code (e.g. 'hydrolysis').
+    Returns a dict with all columns, or raises ValueError if not found.
+    """
+    conn = get_conn()
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM degradation_mechanisms WHERE code = %s", (code,))
+        row = cur.fetchone()
+        if row is None:
+            raise ValueError(f"Mechanism '{code}' not found in database. Check degradation_mechanisms table.")
         cols = [desc[0] for desc in cur.description]
         return dict(zip(cols, row))
 
