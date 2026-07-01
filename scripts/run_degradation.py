@@ -16,12 +16,13 @@ Usage:
 
 import subprocess
 import sys
+import os
 import click
 from rdkit import rdBase
 
 from spora.db.queries import get_polymer, get_mechanism, insert_experiment
 from spora.models.experiment import ExperimentSpec
-from spora.rdkit_pipeline.smiles_builder import build_polymer_smiles
+from spora.rdkit_pipeline.smiles_builder import build_polymer_smiles, generate_conformer, write_xyz
 from spora.rdkit_pipeline.degradation import apply_degradation
 from spora.rdkit_pipeline.descriptors import compute_descriptors
 from spora.db.queries import insert_descriptors_batch
@@ -76,12 +77,16 @@ def run(polymer, mechanism, temperature, time_steps, masterbatch_concentration, 
     })
     click.echo(f"  Experiment ID: {experiment_id}")
 
-    # 3 — Build starting polymer molecule
+    # 4 — Build starting polymer molecule
     click.echo("→ Building polymer SMILES...")
     polymer_smiles = build_polymer_smiles(polymer_record["smiles_monomer"], chain_length)
     mol = Chem.MolFromSmiles(polymer_smiles)
 
-    # 4 — Run degradation steps and collect descriptors
+    # Set up conformer output directory
+    conformer_dir = os.path.join("data", "processed", output_label, "conformers")
+    os.makedirs(conformer_dir, exist_ok=True)
+
+    # 5 — Run degradation steps and collect descriptors
     click.echo(f"→ Running {time_steps} degradation steps...")
     conditions = {"temperature_c": temperature, "masterbatch_pct": masterbatch_concentration}
     fragments = [mol]
@@ -90,6 +95,15 @@ def run(polymer, mechanism, temperature, time_steps, masterbatch_concentration, 
         click.echo(f"   Step {step}/{time_steps}...")
         df = compute_descriptors(fragments, experiment_id, step)
         insert_descriptors_batch(df)
+
+        # Write XYZ conformer for the largest fragment at this step
+        try:
+            largest = max(fragments, key=lambda m: m.GetNumAtoms())
+            mol_3d = generate_conformer(largest)
+            xyz_path = os.path.join(conformer_dir, f"step_{step:03d}.xyz")
+            write_xyz(mol_3d, xyz_path)
+        except Exception as e:
+            click.echo(f"   ⚠ Could not write XYZ at step {step}: {e}")
 
         if step < time_steps:
             new_fragments = []
