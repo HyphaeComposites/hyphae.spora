@@ -1,33 +1,34 @@
 """
 spora/rdkit_pipeline/degradation.py
 -------------------------------------
-Stage 2 of the pipeline: apply degradation reactions to a polymer molecule.
+Stage 2 of the pipeline: apply degradation reactions to polymer molecules.
 
-TODO: Implement apply_degradation() for each mechanism in the
-      degradation_mechanisms table. Use RDKit's AllChem.ReplaceSubstructs
-      with the reaction_smarts field to simulate bond cleavage.
+TODO (Mariana — Week 3): Implement apply_degradation() using RDKit's
+AllChem.ReactionFromSmarts() and RunReactants() to actually break bonds
+based on the reaction_smarts stored in the degradation_mechanisms table.
 """
 
 from rdkit import Chem
-from rdkit.Chem import AllChem
-from typing import List
 
 
-def apply_degradation(mol: Chem.Mol, mechanism_code: str, conditions: dict) -> List[Chem.Mol]:
+def apply_degradation(mol, mechanism: str, conditions: dict) -> list:
     """
-    Apply a single degradation step to a polymer molecule.
+    Apply one degradation step to a molecule and return the resulting fragments.
 
     Args:
-        mol: RDKit molecule object representing the polymer chain
-        mechanism_code: short code matching degradation_mechanisms.code
-                        e.g. 'hydrolysis', 'thermal', 'uv_scission'
-        conditions: dict with keys 'temperature_c', 'masterbatch_pct', etc.
+        mol: RDKit molecule object representing the current polymer chain
+        mechanism: degradation mechanism code (e.g. 'hydrolysis', 'thermo_oxidation_ldpe')
+        conditions: dict with keys like 'temperature_c' and 'masterbatch_pct'
 
     Returns:
-        List of RDKit molecule objects — the fragments produced by this step.
-        For no fragmentation, returns [mol] unchanged.
+        List of RDKit molecule objects — the fragments after degradation.
+        If no reaction occurs, returns the original molecule in a list.
 
-    TODO: implement per-mechanism logic
+    TODO: implement actual bond scission using reaction_smarts from the database.
+    For now returns the molecule unchanged as a placeholder.
     """
-    # Placeholder — returns the input molecule unchanged
+    if mol is None:
+        return []
+
+    # Placeholder — returns molecule unchanged until bond scission is implemented
     return [mol]
